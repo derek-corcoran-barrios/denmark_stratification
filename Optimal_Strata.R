@@ -1,3 +1,4 @@
+library(fasterize)
 library(janitor)
 library(raster)
 library(sf)
@@ -6,10 +7,31 @@ library(vegan)
 
 Layers <- read_rds("BIO_DK.rds")
 Title_9 <- read_sf("O:/Nat_Ecoinformatics/B_Read/Denmark/LandCover/BES_NATURTYPER_SHAPE/bes_naturtyper.shp") %>% 
-  dplyr::select(NATYP_NAVN)
+  dplyr::select(NATYP_NAVN) 
 
+Type <-Title_9 %>% pull(NATYP_NAVN) %>% unique()
+NatID <- tibble(NATYP_NAVN = Type) %>% tibble::rowid_to_column(var = "ID")
+saveRDS(NatID, "NatID.rds")
 
+Title_9 <- Title_9 %>% merge(NatID) %>% fasterize(raster = Layers[[1]], field = "ID")
 saveRDS(Title_9, "Naturtype.rds")
+
+
+SoilRasters <- list.files(path = "O:/AUIT_Geodata/Denmark/Natural_ressources/Soil_geology",pattern = ".tif", recursive = T, full.names = T)
+SoilRasters <- SoilRasters[str_detect(SoilRasters,pattern = ".aux", negate = T)]
+SoilRasters <- SoilRasters[str_detect(SoilRasters,pattern = ".xml", negate = T)]
+SoilRasters <- SoilRasters[str_detect(SoilRasters,pattern = ".ovr", negate = T)]
+
+SoilRasters <- SoilRasters[c(6,45,33,78,87)]
+
+Soils <- list()
+for(i in 1:length(SoilRasters)){ 
+  Soils[[i]] <- stack(SoilRasters[i]) %>% resample(Layers[[1]])
+}
+
+Soils <- Soils %>% purrr::reduce(stack)
+saveRDS(Soils, "Soils.rds")
+
 
 Climate <- stack("o:/Nat_Ecoinformatics/B_Read/DataL")
 
