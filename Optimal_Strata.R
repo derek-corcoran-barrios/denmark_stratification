@@ -48,17 +48,35 @@ Results2 <- Test2$results %>% t %>%
 
 Results2$Groups <- make_clean_names(rownames(Results2))
 
-Selected <- Results2 %>% 
-  dplyr::filter(calinski == max(calinski)) %>% 
-  pull(Groups)
+Selected2 <- Results2 %>% 
+  dplyr::filter(ssi == max(ssi)) %>% 
+  dplyr::pull(Groups)
 
-Partition <- Test$partition %>% 
+Partition2 <- Test2$partition %>% 
   as.data.frame() %>% 
   clean_names() %>% 
-  pull(Selected)
+  pull(Selected2)
 
 Groups2 <- Layers[[1]]
 
-values(Groups2)[ForK$ID] <- Partition  
+values(Groups2)[ForK$ID] <- Partition2 
 
 plot(Groups2, colNA = "black")
+
+saveRDS(Groups2, "TestGroups.rds")
+
+
+TestGroups_DF <- Groups2 %>% 
+  as("SpatialPixelsDataFrame") %>% 
+  as.data.frame() %>% 
+  rename(Group  =  bio_01) %>% 
+  mutate(Group = as.character(Group))
+
+DK <- readRDS("DK_Shape.rds")
+
+ggplot() + 
+  geom_tile(data = TestGroups_DF, aes(x = x, y = y, fill = Group)) +
+  geom_sf(data = DK, alpha = 0) +
+  theme_bw() +
+  scale_fill_viridis_d() + 
+  labs(y = NULL, x = NULL)
