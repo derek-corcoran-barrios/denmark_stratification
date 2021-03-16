@@ -1,9 +1,17 @@
 library(janitor)
 library(raster)
+library(sf)
 library(tidyverse)
 library(vegan)
 
 Layers <- read_rds("BIO_DK.rds")
+Title_9 <- read_sf("O:/Nat_Ecoinformatics/B_Read/Denmark/LandCover/BES_NATURTYPER_SHAPE/bes_naturtyper.shp") %>% 
+  dplyr::select(NATYP_NAVN)
+
+
+saveRDS(Title_9, "Naturtype.rds")
+
+Climate <- stack("o:/Nat_Ecoinformatics/B_Read/DataL")
 
 ForK <- as.data.frame(Layers) %>%
   mutate_all(scale) %>% 
@@ -22,7 +30,7 @@ Results <- Test$results %>% t %>%
 Results$Groups <- make_clean_names(rownames(Results))
   
 Selected <- Results %>% 
-    dplyr::filter(calinski == max(calinski)) %>% 
+    dplyr::filter(calinski == max(calinski))
     pull(Groups)
   
 Partition <- Test$partition %>% 
