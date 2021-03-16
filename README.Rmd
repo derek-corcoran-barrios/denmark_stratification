@@ -1,0 +1,37 @@
+---
+title: "Denjmark stratification"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Objective
+
+The objective of this repository is to generate a stratification of Denmark based on Present climatic variables, soils variables and lidar variables (Average height and vegetation cover). # Vegetation height and density 
+# Soil layer N
+# Nature area   
+
+# 150 points as close as possible and as similar as possible to 150 points
+
+## Used packages
+
+the packages needed to use this repo are:
+
+- raster
+- rworldxtra
+- sf
+- tidyverse
+
+## layers used:
+
+### climatic variables:
+
+- CHELSA's bioclimatic variables
+
+### Soil variables
+
+### Lidar variables
+
+Average height
